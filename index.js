@@ -6,21 +6,10 @@ const app = require('express')(),
     authRouter = require('./src/auth/router'),
     session = require('express-session'),
     passport = require('passport'),
-    Sequelize = require('sequelize'),
-    SequelizeStore = require('connect-session-sequelize')(session.Store)
+    SequelizeStore = require('connect-session-sequelize')(session.Store),
+    db = require('./src/db')
 
-const dbCredentials = {
-    name: process.env.DB_NAME,
-    login: process.env.DB_LOGIN,
-    password: process.env.DB_PASSWORD,
-}
-
-const sessionStore = new SequelizeStore({
-    db: new Sequelize(dbCredentials.name, dbCredentials.login, dbCredentials.password, {
-        dialect: "mysql",
-        // logging: false
-    })
-})
+const sessionStore = new SequelizeStore({ db })
 
 app.use(session({
     secret: process.env.COOKIE_SECRET,
@@ -37,5 +26,6 @@ app.use(passport.session());
 
 app.listen(port, async() => {
     await sessionStore.sync()
+    await db.sync()
     console.log(`Server listening http://localhost:${port}`)
 })
