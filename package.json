@@ -1,0 +1,27 @@
+{
+  "name": "moneger-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "serve": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moneger-app/moneger-api.git"
+  },
+  "author": "Nikita Gromyko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/moneger-app/moneger-api/issues"
+  },
+  "homepage": "https://github.com/moneger-app/moneger-api#readme",
+  "dependencies": {
+    "body-parser": "^1.20.1",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "passport": "^0.6.0",
+    "passport-google-oauth2": "^0.2.0"
+  }
+}
