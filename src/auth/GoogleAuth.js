@@ -9,18 +9,22 @@ passport.use(new GoogleStrategy({
         passReqToCallback: true
     },
     async function(request, accessToken, refreshToken, profile, done) {
-        const [row, created] = await User.findOrCreate({
-            where: { googleId: profile.id },
-            defaults: {
-                firstName: profile.given_name,
-                secondName: profile.family_name,
-                googleId: profile.id,
-                pictureLink: profile.picture,
-                language: profile.language,
-                email: profile.email
-            }
-        })
-        return done(null, profile)
+        try {
+            console.log(profile)
+            const [row, created] = await User.findOrCreate({
+                where: {
+                    googleId: profile.id,
+                    firstName: profile.given_name,
+                    secondName: profile.family_name,
+                    pictureLink: profile.picture,
+                    language: profile.language,
+                    email: profile.email
+                }
+            })
+            return done(null, profile)
+        } catch(err) {
+            console.log(err)
+        }
     }
 ));
 
