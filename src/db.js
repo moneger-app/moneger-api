@@ -8,5 +8,5 @@ const dbCredentials = {
 
 module.exports = new Sequelize(dbCredentials.name, dbCredentials.login, dbCredentials.password, {
     dialect: "mysql",
-    // logging: false
+    logging: false
 })

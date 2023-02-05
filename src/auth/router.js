@@ -1,15 +1,15 @@
-const passport = require("passport");
 const router = require('express').Router()
-require('./GoogleAuth')
+const getVerifiedUserData = require("./GoogleAuth")
+const UserService = require("../services/UserService");
 
-router.get('/auth/google',
-    passport.authenticate('google', { scope: ['email', 'profile'], prompt: 'select_account' })
-)
+router.post('/google/auth', async (req, res) => {
+    const profile = await getVerifiedUserData(req.body.token)
+    const user = await UserService.userHandler(profile)
+    if (!req.session.userId) {
+        req.session.userId = user.id
+        req.session.save()
+    }
+    res.send({ user }).status(200)
+})
 
-router.get('/google/redirect',
-    passport.authenticate( 'google', {
-        successRedirect: '/',
-        failureRedirect: '/failure'
-    })
-)
 module.exports = router
