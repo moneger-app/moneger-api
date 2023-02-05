@@ -1,41 +1,36 @@
 require('dotenv').config()
 
-const app = require('express')(),
-    bodyParser = require('body-parser'),
+const express = require('express'),
+    app = express(),
     port = process.env.PORT,
     authRouter = require('./src/auth/router'),
     session = require('express-session'),
-    passport = require('passport'),
-    Sequelize = require('sequelize'),
-    SequelizeStore = require('connect-session-sequelize')(session.Store)
+    SequelizeStore = require('connect-session-sequelize')(session.Store),
+    db = require('./src/db'),
+    cors = require('cors')
 
-const dbCredentials = {
-    name: process.env.DB_NAME,
-    login: process.env.DB_LOGIN,
-    password: process.env.DB_PASSWORD,
-}
+const sessionStore = new SequelizeStore({ db })
 
-const sessionStore = new SequelizeStore({
-    db: new Sequelize(dbCredentials.name, dbCredentials.login, dbCredentials.password, {
-        dialect: "mysql",
-        // logging: false
-    })
-})
+app.use(cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true
+}))
+
+app.use(express.json())
 
 app.use(session({
     secret: process.env.COOKIE_SECRET,
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 60000 }
+    cookie: {
+        maxAge: 60000
+    }
 }))
-
-app.use(bodyParser.json())
 app.use(authRouter)
-app.use(passport.initialize());
-app.use(passport.session());
 
 app.listen(port, async() => {
     await sessionStore.sync()
+    await db.sync()
     console.log(`Server listening http://localhost:${port}`)
 })
