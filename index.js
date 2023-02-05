@@ -4,10 +4,12 @@ const express = require('express'),
     app = express(),
     port = process.env.PORT,
     authRouter = require('./src/auth/router'),
+    router = require('./src/controllers'),
     session = require('express-session'),
     SequelizeStore = require('connect-session-sequelize')(session.Store),
     db = require('./src/db'),
-    cors = require('cors')
+    cors = require('cors'),
+    checkAuthMiddleware = require('./src/middleware/auth')
 
 const sessionStore = new SequelizeStore({ db })
 
@@ -28,6 +30,7 @@ app.use(session({
     }
 }))
 app.use(authRouter)
+app.use(checkAuthMiddleware, router)
 
 app.listen(port, async() => {
     await sessionStore.sync()
