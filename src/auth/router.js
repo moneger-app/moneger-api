@@ -12,4 +12,9 @@ router.post('/google/auth', async (req, res) => {
     res.send({ user }).status(200)
 })
 
+router.get('/logout', (req, res) => {
+    req.session.destroy()
+    res.sendStatus(200)
+})
+
 module.exports = router
