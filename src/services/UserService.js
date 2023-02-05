@@ -3,7 +3,6 @@ const User = require("../models/User");
 module.exports = {
     userHandler: async (profile) => {
         try {
-            console.log(profile)
             const [row, created] = await User.findOrCreate({
                 where: {
                     googleId: profile.sub,
@@ -18,5 +17,8 @@ module.exports = {
             // TODO: 400 exception
             console.log(err)
         }
+    },
+    getProfile: async (id) => {
+        return (await User.findByPk(id))
     }
 }
