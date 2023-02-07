@@ -5,10 +5,10 @@ module.exports = {
         try {
             const [row, created] = await User.findOrCreate({
                 where: {
-                    googleId: profile.sub,
-                    firstName: profile.given_name,
-                    secondName: profile.family_name,
-                    pictureLink: profile.picture,
+                    google_id: profile.sub,
+                    first_name: profile.given_name,
+                    second_name: profile.family_name,
+                    picture_link: profile.picture,
                     email: profile.email
                 }
             })

@@ -1,12 +1,25 @@
 const { DataTypes} = require('sequelize'),
-    db = require('../db')
+    db = require('../db'),
+    Account = require('./Account')
 
-module.exports = db.define('User', {
-    googleId: DataTypes.STRING(21),
-    firstName: DataTypes.STRING,
-    secondName: DataTypes.STRING,
-    pictureLink: DataTypes.STRING,
+const User = db.define('User', {
+    google_id: DataTypes.STRING(21),
+    first_name: DataTypes.STRING,
+    second_name: DataTypes.STRING,
+    picture_link: DataTypes.STRING,
     email: DataTypes.STRING
 }, {
     timestamps: false
 })
+
+User.hasMany(Account, {
+    foreignKey: 'uid',
+    allowNull: false
+})
+Account.belongsTo(User, {
+    foreignKey: 'uid',
+    allowNull: false
+
+})
+
+module.exports = User
