@@ -9,7 +9,8 @@ const express = require('express'),
     SequelizeStore = require('connect-session-sequelize')(session.Store),
     db = require('./src/db'),
     cors = require('cors'),
-    checkAuthMiddleware = require('./src/middleware/auth')
+    checkAuthMiddleware = require('./src/middleware/auth'),
+    Exception = require('./src/utils/Exception')
 
 const sessionStore = new SequelizeStore({ db })
 
@@ -31,6 +32,12 @@ app.use(session({
 }))
 app.use(authRouter)
 app.use(checkAuthMiddleware, router)
+
+app.use(async (err, req, res, next) => {
+    if (err instanceof Exception) {
+        res.status(err.statusCode).send(err.message)
+    } else next(err)
+})
 
 app.listen(port, async() => {
     await sessionStore.sync()
