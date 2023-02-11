@@ -1,7 +1,8 @@
 const router = require('express').Router(),
-    AccountService = require('../services/AccountService')
+    AccountService = require('../services/AccountService'),
+    catchError = require('../middleware/catchError')
 
-router.post('/account', async (req, res, next) => {
+router.post('/account', catchError(async (req, res, next) => {
     const { name, currency, balance, showInTotal } = req.body
     await AccountService.createAccount(
         req.session.userId,
@@ -10,6 +11,6 @@ router.post('/account', async (req, res, next) => {
         }
     )
     res.sendStatus(204)
-})
+}))
 
 module.exports = router

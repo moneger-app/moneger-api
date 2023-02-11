@@ -1,10 +1,20 @@
-const Account = require('../models/Account')
+const Account = require('../models/Account'),
+    Exception = require('../utils/Exception')
+
+async function isAccountExist(name) {
+    const isExist = await Account.findOne({
+        where: { name }
+    })
+    return !!isExist
+}
 
 module.exports = {
     createAccount: async (userId, account) => {
         if (!account.name) {
-            console.log('required field')
-            // TODO: throw error name is required
+            throw new Exception(400, 'Account name is required')
+        }
+        if (await isAccountExist(account.name)) {
+            throw new Exception(400, `Account '${account.name}' already exist`)
         }
 
         await Account.create({
