@@ -2,9 +2,9 @@ const Account = require('../models/Account'),
     Exception = require('../utils/Exception'),
     User = require('../models/User')
 
-async function isAccountExist(name) {
+async function isAccountExist(uid, name) {
     const account = await Account.findOne({
-        where: { name }
+        where: { uid, name }
     })
     return account?.id
 }
@@ -13,6 +13,10 @@ module.exports = {
     createAccount: async (userId, accountData) => {
         if (!accountData.name) {
             throw new Exception(400, 'Account name is required')
+        }
+
+        if (await isAccountExist(userId, accountData.name)) {
+            throw new Exception(409, `Account with name ${accountData.name} is already exist`)
         }
 
         try {
