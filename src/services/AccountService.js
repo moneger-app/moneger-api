@@ -15,7 +15,7 @@ module.exports = {
             throw new Exception(400, 'Account name is required')
         }
 
-        if (await isAccountExist(userId, accountData.name)) {
+        if (await isAccountExist(userId, +accountData.name)) {
             throw new Exception(409, `Account with name ${accountData.name} is already exist`)
         }
 
@@ -43,16 +43,20 @@ module.exports = {
         if (accountId) {
             accounts = await Account.findOne({
                 where: {
-                    uid: userId,
+                    '$User.id$': userId,
                     id: +accountId
-                }
+                },
+                include: [ User ]
             })
         } else {
             accounts = await Account.findAll({
-                where: { uid: userId }
+                where: {
+                    '$User.id$': userId
+                },
+                include: [ User ]
             })
         }
-        return accounts
+        return { accounts, totalCount: accounts.length }
     },
     update: async (userId, accountId, account) => {
         if (!accountId) {
