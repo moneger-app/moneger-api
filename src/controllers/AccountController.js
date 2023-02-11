@@ -24,4 +24,9 @@ router.route('/account/')
         res.sendStatus(201)
     }))
 
+    .delete(catchError(async  (req, res, next) => {
+        await AccountService.deleteAccount(req.session.userId, req.query.id)
+        res.sendStatus(200)
+    }))
+
 module.exports = router

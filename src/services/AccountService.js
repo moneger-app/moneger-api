@@ -63,5 +63,23 @@ module.exports = {
                 id: accountId
             }
         })
+    },
+    deleteAccount: async (userId, accountId) => {
+        if (!accountId) {
+            throw new Exception(400, 'Id is required')
+        }
+
+        const account = await Account.findOne({
+            where: {
+                uid: userId,
+                id: +accountId
+            }
+        })
+
+        if (!account) {
+            throw new Exception(404, `Account with id ${accountId} was not found`)
+        }
+
+        await account.destroy()
     }
 }
