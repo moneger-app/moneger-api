@@ -119,5 +119,14 @@ module.exports = {
         }
 
         await account.destroy()
+    },
+
+    changeAccountBalance: async (account, transactionType, value) => {
+        const isIncoming = transactionType === transactionType.Incoming || transactionType === transactionType.AccountIncoming,
+            balance = isIncoming ? account.balance + value  : account.balance - value
+
+        account.update({
+            balance
+        })
     }
 }
