@@ -16,6 +16,9 @@ User.hasMany(Account, {
     foreignKey: 'uid',
     allowNull: false
 })
-Account.belongsTo(User)
+Account.belongsTo(User, {
+    allowNull: false,
+    foreignKey: 'uid'
+})
 
 module.exports = User

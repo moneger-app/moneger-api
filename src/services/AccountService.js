@@ -4,9 +4,15 @@ const Account = require('../models/Account'),
 
 async function isAccountExist(uid, name) {
     const account = await Account.findOne({
-        where: { uid, name }
+        where: {
+            '$User.id$': uid,
+            name
+        },
+        include: [{
+            model: User,
+        } ]
     })
-    return account?.id
+    return !!account
 }
 
 module.exports = {
@@ -15,7 +21,7 @@ module.exports = {
             throw new Exception(400, 'Account name is required')
         }
 
-        if (await isAccountExist(userId, +accountData.name)) {
+        if (await isAccountExist(userId, accountData.name)) {
             throw new Exception(409, `Account with name ${accountData.name} is already exist`)
         }
 
@@ -39,15 +45,19 @@ module.exports = {
         }
     },
     getAccount: async (userId, accountId) => {
-        let accounts
+        let accounts = []
         if (accountId) {
-            accounts = await Account.findOne({
-                where: {
-                    '$User.id$': userId,
-                    id: +accountId
-                },
-                include: [ User ]
-            })
+            accounts.push(
+                await Account.findOne({
+                    where: {
+                        '$User.id$': userId,
+                        id: +accountId
+                    },
+                    include: [ User ]
+                }).catch(err => {
+                    console.log(err)
+                })
+            )
         } else {
             accounts = await Account.findAll({
                 where: {
@@ -56,30 +66,40 @@ module.exports = {
                 include: [ User ]
             })
         }
-        return { accounts, totalCount: accounts.length }
+
+        accounts = JSON.parse(JSON.stringify(accounts))
+        accounts.forEach(item => { delete item.User })
+
+        return {
+            accounts: accounts || [],
+            totalCount: accounts?.length || 0
+        }
     },
-    update: async (userId, accountId, account) => {
+    update: async (userId, accountId, accountData) => {
         if (!accountId) {
             throw new Exception(400, 'Id is required')
         }
 
-        const existAccountId = await isAccountExist(account.name)
-
-        if (existAccountId && existAccountId !== +accountId) {
-            throw new Exception(400, `Account '${account.name}' already exist`)
+        if (await isAccountExist(userId, accountData.name)) {
+            throw new Exception(409, `Account with name '${accountData.name}' is already exist`)
         }
 
-        await Account.update({
-            name: account.name,
-            currency: account.currency,
-            balance: account.balance,
-            show_in_total: account.showInTotal
-        },{
+        const account = await Account.findOne({
             where: {
-                uid: userId,
-                id: accountId
-            }
+                '$User.id$': userId,
+                id: +accountId,
+
+            },
+            include: [ User ]
         })
+
+        if (!account) {
+            throw new Exception(404, `Account with id ${accountId} was not found`)
+        }
+
+        const { name, currency, balance, showInTotal: show_in_total } = accountData
+
+        account.update({ name, currency, balance, show_in_total })
     },
     deleteAccount: async (userId, accountId) => {
         if (!accountId) {
@@ -88,9 +108,10 @@ module.exports = {
 
         const account = await Account.findOne({
             where: {
-                uid: userId,
+                '$User.id$': userId,
                 id: +accountId
-            }
+            },
+            include: [ User ]
         })
 
         if (!account) {
