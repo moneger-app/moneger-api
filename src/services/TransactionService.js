@@ -61,6 +61,10 @@ module.exports = {
 
     },
     getTransactionsBySkipTake: async (userId, accountId, skip, take) => {
+        if (!accountId) {
+            throw new Exception(400, `AccountId is required`)
+        }
+
         if (!(await findAccount(userId, accountId))) {
             throw new Exception(404, `Account with id ${accountId} was not found`)
         }
