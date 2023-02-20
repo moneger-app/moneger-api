@@ -7,7 +7,8 @@ const User = db.define('User', {
     first_name: DataTypes.STRING,
     second_name: DataTypes.STRING,
     picture_link: DataTypes.STRING,
-    email: DataTypes.STRING
+    email: DataTypes.STRING,
+    currency: DataTypes.STRING(4)
 }, {
     timestamps: false
 })

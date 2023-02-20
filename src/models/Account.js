@@ -7,7 +7,6 @@ const Account = db.define('Account', {
         allowNull: false,
         trim: true
     },
-    currency: DataTypes.STRING(3),
     balance: DataTypes.FLOAT,
     show_in_total: DataTypes.BOOLEAN
 }, {

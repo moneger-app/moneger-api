@@ -29,7 +29,6 @@ module.exports = {
             const user = await User.findByPk(userId)
             const account = await Account.create({
                 name: accountData.name,
-                currency: accountData.currency || 'USD',
                 balance: accountData.balance || 0,
                 show_in_total: accountData.showInTotal ?? true
             },{
@@ -97,9 +96,9 @@ module.exports = {
             throw new Exception(404, `Account with id ${accountId} was not found`)
         }
 
-        const { name, currency, balance, showInTotal: show_in_total } = accountData
+        const { name, balance, showInTotal: show_in_total } = accountData
 
-        account.update({ name, currency, balance, show_in_total })
+        account.update({ name, balance, show_in_total })
     },
     deleteAccount: async (userId, accountId) => {
         if (!accountId) {

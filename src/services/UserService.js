@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Exception = require("../utils/Exception");
 
 module.exports = {
     userHandler: async (profile) => {
@@ -9,7 +10,8 @@ module.exports = {
                     first_name: profile.given_name,
                     second_name: profile.family_name,
                     picture_link: profile.picture,
-                    email: profile.email
+                    email: profile.email,
+                    currency: 'USD'
                 }
             })
             return row
@@ -20,5 +22,13 @@ module.exports = {
     },
     getProfile: async (id) => {
         return (await User.findByPk(id))
+    },
+    updateCurrency: async (id, currency) => {
+        if (!currency) {
+            // TODO: currency enum
+            throw new Exception(400, 'Currency is required')
+        }
+        const user = await User.findByPk(id)
+        await user.update({ currency })
     }
 }
