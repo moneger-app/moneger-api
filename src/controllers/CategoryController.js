@@ -8,5 +8,9 @@ router.route('/category')
         res.sendStatus(200)
     }))
 
+    .get(catchError(async (req, res, next) => {
+        res.send(await CategoryService.getCategories(req.session.userId)).status(200)
+    }))
+
 
 module.exports = router
