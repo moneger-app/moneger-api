@@ -14,12 +14,13 @@ module.exports = {
         user.addCategory(category)
     },
     getCategories: async (userId) => {
-        const categories = await Category.findAll({
+        let categories = await Category.findAll({
             where: {
                 '$User.id$': userId
             },
             include: [User]
         })
+        categories = JSON.parse(JSON.stringify(categories))
         categories.forEach(item => { delete item.User })
         return {
             totalCount: categories.length,

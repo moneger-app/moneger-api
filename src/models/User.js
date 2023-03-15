@@ -1,6 +1,8 @@
 const { DataTypes} = require('sequelize'),
     db = require('../db'),
-    Account = require('./Account')
+    Account = require('./Account'),
+    Category = require('./Category'),
+    Transaction = require('./Transaction')
 
 const User = db.define('User', {
     google_id: DataTypes.STRING(21),
@@ -13,6 +15,7 @@ const User = db.define('User', {
     timestamps: false
 })
 
+
 User.hasMany(Account, {
     foreignKey: 'uid',
     allowNull: false
@@ -20,6 +23,22 @@ User.hasMany(Account, {
 Account.belongsTo(User, {
     allowNull: false,
     foreignKey: 'uid'
+})
+
+User.hasMany(Category, {
+    foreignKey: 'uid'
+})
+
+Category.belongsTo(User, {
+    foreignKey: 'uid'
+})
+
+Category.hasMany(Transaction, {
+    foreignKey: 'category_id'
+})
+
+Transaction.belongsTo(Category, {
+    foreignKey: 'category_id'
 })
 
 module.exports = User

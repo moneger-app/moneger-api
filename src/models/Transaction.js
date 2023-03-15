@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize'),
     db = require('../db'),
-    Account = require('../models/Account')
+    Account = require('./Account')
 
 const Transaction = db.define('transaction', {
     type: {

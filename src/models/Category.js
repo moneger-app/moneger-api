@@ -1,7 +1,5 @@
 const db = require('../db'),
-    { DataTypes } = require('sequelize'),
-    User = require('./User'),
-    Transaction = require('./Transaction')
+    { DataTypes } = require('sequelize')
 
 const Category = db.define('Category', {
     name: DataTypes.STRING,
@@ -10,17 +8,5 @@ const Category = db.define('Category', {
 }, {
     timestamps: false
 })
-
-User.hasMany(Category, {
-    allowNull: false,
-    foreignKey: 'uid'
-})
-Category.belongsTo(User, {
-    allowNull: false,
-    foreignKey: 'uid'
-})
-
-// Category.hasMany(Transaction)
-// Transaction.hasOne(Category)
 
 module.exports = Category

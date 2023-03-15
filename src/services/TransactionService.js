@@ -1,9 +1,10 @@
 const Account = require('../models/Account'),
     Transaction = require('../models/Transaction'),
     User = require('../models/User'),
+    Category = require('../models/Category'),
     Exception = require('../utils/Exception'),
-    TransactionTypes = require('../enums/transactionTypes')
-const {changeAccountBalance} = require("./AccountService");
+    TransactionTypes = require('../enums/transactionTypes'),
+    { changeAccountBalance } = require("./AccountService")
 
 async function findAccount(userId, accountId) {
     return (await Account.findOne({
@@ -17,6 +18,7 @@ async function findAccount(userId, accountId) {
 
 module.exports = {
     create: async (userId, accountId, transactionData) => {
+        console.log(transactionData)
         const account = await findAccount(userId, accountId)
 
         if (!accountId) {
@@ -31,16 +33,26 @@ module.exports = {
             throw new Exception(400, `type and value parameters are required`)
         }
 
+        const category_id = transactionData.categoryId
+        const category = await Category.findByPk(category_id).catch(err => {
+            console.log(err )
+        })
+
+        if (!category) {
+            throw new Exception(404, `Category with id ${transactionData.categoryId} not found`)
+        }
+
         const transaction = await Transaction.create({
             type: transactionData.type,
             description: transactionData.description,
             value: transactionData.value.toFixed(2),
-            date: transactionData.date || Date.now()
+            date: transactionData.date || Date.now(),
+            category_id: category.id,
+            account_id: account.id
+        }, {
         }).catch(err => {
             console.log(err)
         })
-
-        account.addTransaction(transaction)
 
         await changeAccountBalance(account, transaction.type, transaction.value)
     },

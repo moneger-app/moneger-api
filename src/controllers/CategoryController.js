@@ -1,6 +1,6 @@
 const router = require('express').Router(),
     catchError = require('../middleware/catchError'),
-    CategoryService = require('../services/Category')
+    CategoryService = require('../services/CategoryService')
 
 router.route('/category')
     .post(catchError(async (req, res, next) => {
