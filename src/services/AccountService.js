@@ -79,8 +79,10 @@ module.exports = {
             throw new Exception(400, 'Id is required')
         }
 
-        if (await isAccountExist(userId, accountData.name)) {
-            throw new Exception(409, `Account with name '${accountData.name}' is already exist`)
+        const { name, balance, showInTotal: show_in_total } = accountData
+
+        if (name && await isAccountExist(userId, name)) {
+            throw new Exception(409, `Account with name '${name}' is already exist`)
         }
 
         const account = await Account.findOne({
@@ -95,8 +97,6 @@ module.exports = {
         if (!account) {
             throw new Exception(404, `Account with id ${accountId} was not found`)
         }
-
-        const { name, balance, showInTotal: show_in_total } = accountData
 
         account.update({ name, balance, show_in_total })
     },
